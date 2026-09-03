@@ -1,0 +1,640 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+    /* LATAR KERTAS WARM (WARM PAPER TONE) */
+    background-color: #f5f0eb;
+    background-image: radial-gradient(#e4ded6 0.8px, transparent 0.8px);
+    background-size: 20px 20px;
+    color: #2c2825;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ANIMASI HATI MELAYANG BACKGROUND */
+#hearts-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.heart-particle {
+    position: absolute;
+    top: -20px;
+    animation: fall linear forwards;
+    opacity: 0.5;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(105vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* LAYOUT CONTAINER */
+.screen {
+    display: none;
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    padding: 30px 20px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.screen.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* LOCK SCREEN PIN PASSCODE */
+.lock-icon {
+    font-size: 50px;
+    margin-top: 30px;
+}
+
+.pin-container input {
+    width: 140px;
+    height: 45px;
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 10px;
+    border: 1px solid #e6dfd5;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #2c2825;
+    margin: 15px 0;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 220px;
+    margin-top: 10px;
+}
+
+.keypad button {
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #e6dfd5;
+    background: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c2825;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.keypad button:active {
+    background: #eae2d6;
+    transform: scale(0.95);
+}
+
+.pin-error-text {
+    color: #b85d51;
+    font-size: 12px;
+    margin-top: 12px;
+    min-height: 16px;
+}
+
+/* TOMBOL MUSIK MELAYANG */
+.music-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: #ffffff;
+    border: 1px solid #e2dad0;
+    color: #2c2825;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.music-toggle:active {
+    transform: scale(0.92);
+}
+
+/* COVER OPEN */
+.title-serif {
+    font-family: 'Georgia', serif;
+    font-size: 34px;
+    font-weight: 300;
+    margin-top: 60px;
+    line-height: 1.3;
+    color: #222222;
+}
+
+.envelope-icon {
+    font-size: 70px;
+    margin: 40px 0;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+.btn-black {
+    background: #222222;
+    color: #ffffff;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    letter-spacing: 0.5px;
+}
+
+.btn-black:active {
+    transform: scale(0.96);
+}
+
+/* KALENDER (PAPER CARD) */
+.calendar-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px;
+    width: 100%;
+    border: 1px solid #e6dfd5;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+    margin-top: 10px;
+}
+
+.calendar-header {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #b85d51;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    font-size: 12px;
+    color: #777;
+}
+
+.calendar-grid span {
+    padding: 6px 0;
+    border-radius: 6px;
+}
+
+.calendar-grid .active-date {
+    background: #b85d51;
+    color: #ffffff;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(184, 93, 81, 0.4);
+}
+
+/* RELATIONSHIP COUNTER */
+.counter-card {
+    background: #ffffff;
+    border: 1px solid #e6dfd5;
+    border-radius: 16px;
+    padding: 14px;
+    width: 100%;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.counter-title {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 8px;
+}
+
+.counter-timer {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.counter-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.counter-num {
+    font-size: 18px;
+    font-weight: bold;
+    color: #b85d51;
+}
+
+.counter-unit {
+    font-size: 10px;
+    color: #888;
+}
+
+/* MENU GRID */
+.subtext {
+    font-size: 13px;
+    color: #666;
+    margin: 15px 0 10px;
+}
+
+.subtext-light {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.menu-item {
+    background: #ffffff;
+    border: 1px solid #e6dfd5;
+    border-radius: 16px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.menu-item:active {
+    transform: scale(0.94);
+}
+
+.menu-item-full {
+    grid-column: span 3;
+    height: 48px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #ffffff;
+    color: #2c2825;
+}
+
+/* TEXT CARD & DETAIL PAGES */
+.text-card {
+    background: #ffffff;
+    border: 1px solid #e6dfd5;
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    text-align: left;
+    line-height: 1.6;
+    font-size: 14px;
+    margin-top: 15px;
+    color: #2c2825;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.text-card ol {
+    padding-left: 18px;
+}
+
+.text-card li {
+    margin-bottom: 8px;
+}
+
+.gift-box-icon {
+    font-size: 60px;
+    margin: 20px 0;
+}
+
+/* KOTAK BALASAN WHATSAPP */
+.reply-card {
+    background: #ffffff;
+    border: 1px solid #e6dfd5;
+    border-radius: 16px;
+    padding: 15px;
+    width: 100%;
+    margin-top: 15px;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.reply-card strong {
+    font-size: 13px;
+    color: #2c2825;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.reply-card textarea {
+    width: 100%;
+    height: 70px;
+    border: 1px solid #e6dfd5;
+    border-radius: 10px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: none;
+    outline: none;
+    background: #fcfbfa;
+}
+
+.btn-wa {
+    width: 100%;
+    background: #25D366;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 3px 10px rgba(37, 211, 102, 0.2);
+}
+
+.btn-wa:active {
+    transform: scale(0.98);
+}
+
+/* PHOTO GRID MEMORIES */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.photo-grid img {
+    width: 100%;
+    height: 140px;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 1px solid #e6dfd5;
+    transition: transform 0.2s;
+}
+
+.photo-grid img:hover {
+    transform: scale(1.02);
+}
+
+/* INTERACTIVE KUE & LILIN */
+.cake-container {
+    margin: 15px 0 5px;
+    cursor: pointer;
+}
+
+.cake {
+    position: relative;
+    width: 110px;
+    height: 70px;
+    background: #f4a291;
+    border-radius: 10px 10px 0 0;
+    margin: 35px auto 0;
+    box-shadow: inset 0 -10px 0 #e78b77, 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.candle {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 25px;
+    background: #7bbca9;
+    border-radius: 3px;
+}
+
+.flame {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 18px;
+    background: #f5cd79;
+    border-radius: 50% 50% 20% 20%;
+    box-shadow: 0 0 10px #e67e22, 0 0 20px #f1c40f;
+    animation: flicker 0.6s infinite alternate;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.flame.out {
+    opacity: 0;
+    transform: translateX(-50%) scale(0);
+}
+
+@keyframes flicker {
+    0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+    100% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+}
+
+.candle-hint {
+    font-size: 12px;
+    color: #b85d51;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* SONGS PAGE */
+.song-list {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.song-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: left;
+    border: 1px solid #e6dfd5;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.song-card strong {
+    color: #b85d51;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* ANNIVERSARY TIMELINE */
+.anniversary-timeline {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.anniv-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #e6dfd5;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.anniv-card img {
+    width: 75px;
+    height: 75px;
+    border-radius: 10px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.anniv-info {
+    flex: 1;
+}
+
+.year-badge {
+    display: inline-block;
+    background: #eae2d6;
+    color: #333;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.year-badge.gold {
+    background: linear-gradient(45deg, #d4af37, #e67e22);
+    color: #ffffff;
+}
+
+.anniv-info p {
+    font-size: 12px;
+    color: #555;
+}
+
+/* VIDEO CAROUSEL */
+.video-card {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e6dfd5;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.video-card video {
+    width: 100%;
+    max-height: 250px;
+    background: #000;
+}
+
+.video-caption {
+    padding: 10px;
+    font-size: 13px;
+    color: #333;
+}
+
+.slide-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.btn-slide {
+    background: #ffffff;
+    color: #333;
+    border: 1px solid #e6dfd5;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* MODAL LIGHTBOX ZOOM FOTO */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal img {
+    max-width: 95%;
+    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(255,255,255,0.2);
+    animation: zoomIn 0.25s ease-in-out;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+/* STYLING KARTU PESAN ANNIVERSARY */
+.highlight-menu {
+    background: linear-gradient(135deg, #2c2825, #4a3e39) !important;
+    color: #f7e7ce !important;
+    border: 1px solid #d4af37 !important;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.anniv-card-gold {
+    border: 1px solid #d4af37 !important;
+    background: #fffdf9 !important;
+    box-shadow: 0 6px 18px rgba(212, 175, 55, 0.15) !important;
+    position: relative;
+}
+
+.anniv-card-gold::before {
+    content: "✨ 21 September ✨";
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    color: #b8860b;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
