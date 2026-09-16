@@ -7,6 +7,35 @@
     <link rel="stylesheet" href="style.css">
     <!-- Library Konfeti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* CSS PUZZLE */
+        #puzzle-board {
+            width: 270px;
+            height: 270px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            background: #ddd;
+            border: 3px solid #333;
+            border-radius: 8px;
+            margin: 15px auto;
+            overflow: hidden;
+        }
+        .tile {
+            width: 88px;
+            height: 88px;
+            background-image: url('foto/puzzle.jpg');
+            background-size: 270px 270px;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+        .empty-tile {
+            background: #fff !important;
+            cursor: default;
+        }
+    </style>
 </head>
 <body>
 
@@ -40,30 +69,16 @@
         <button class="btn-black" onclick="tryOpenPinScreen()">Bolee Di Pencet</button>
     </div>
 
-    <!-- SCREEN 1: LOCK SCREEN (PIN PASSCODE KEYPAD) -->
+    <!-- SCREEN 1: LOCK SCREEN (SLIDING PUZZLE) -->
     <div id="screen-lock" class="screen">
-        <div class="lock-icon">🔒</div>
-        <h2 class="title-serif" style="font-size: 24px; margin-top: 10px;">Masukan PIN</h2>
-        <p class="subtext">pikir ae sendiri</p>
+        <div class="lock-icon">🧩</div>
+        <h2 class="title-serif" style="font-size: 24px; margin-top: 10px;">Susun Gambar Ini Dulu Ya!</h2>
+        <p class="subtext">Geser kotak sampai gambarnya pas ❤️</p>
         
-        <div class="pin-container">
-            <input type="password" id="pin-input" maxlength="4" placeholder="••••" readonly />
-        </div>
-
-        <div class="keypad">
-            <button onclick="pressKey('1')">1</button>
-            <button onclick="pressKey('2')">2</button>
-            <button onclick="pressKey('3')">3</button>
-            <button onclick="pressKey('4')">4</button>
-            <button onclick="pressKey('5')">5</button>
-            <button onclick="pressKey('6')">6</button>
-            <button onclick="pressKey('7')">7</button>
-            <button onclick="pressKey('8')">8</button>
-            <button onclick="pressKey('9')">9</button>
-            <button onclick="clearPin()">C</button>
-            <button onclick="pressKey('0')">0</button>
-            <button onclick="checkPin()">OK</button>
-        </div>
+        <div id="puzzle-board"></div>
+        <button style="background: none; border: none; color: #777; text-decoration: underline; cursor: pointer; font-size: 13px; margin-top: 16px; width: 100%; text-align: center; display: block;" onclick="forceOpen()">
+    Udah pusing?
+</button>
         <p id="pin-error" class="pin-error-text"></p>
     </div>
 
@@ -133,7 +148,7 @@
         </div>
 
         <div class="text-card">
-            <p>Happy Birthday Salfa Nadiyah! ❤️<br><br>"Happy 20th birthday, cintakuu. Maacii udah menjadi bagian terindah dalam hidup akkuu. Aku bangga ngeliat kamu tumbuh jadi pribadi yang hebat,jadi lebih kuat pastinya yeahh, semoga akku bisa nemenin kamu terus yahh,  Semoga di umur yang baru ini kamu selalu diberikan kesehatan, kebahagiaan, dan semua hal baik yang selama ini kamu doakan."</p>
+            <p>Happy Birthday Salfa Nadiyah! ❤️<br><br>"Happy 20th birthday, cintakuu. Maacii udah menjadi bagian terindah dalam hidup akkuu. Aku bangga ngeliat kamu tumbuh jadi pribadi yang hebat,jadi lebih kuat pastinya yeahh, semoga akku bisa nemenin kamu terus yahh, Semoga di umur yang baru ini kamu selalu diberikan kesehatan, kebahagiaan, dan semua hal baik yang selama ini kamu doakan."</p>
         </div>
         <button class="btn-black" onclick="backToDashboard()">Back</button>
     </div>
@@ -317,5 +332,90 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- SCRIPT PUZZLE INTEGRATION -->
+    <script>
+        const puzzleBoard = document.getElementById('puzzle-board');
+        let puzzleTiles = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+        function renderPuzzleBoard() {
+            if (!puzzleBoard) return;
+            puzzleBoard.innerHTML = '';
+            puzzleTiles.forEach((val, idx) => {
+                const el = document.createElement('div');
+                if (val === 8) {
+                    el.className = 'tile empty-tile';
+                } else {
+                    el.className = 'tile';
+                    const row = Math.floor(val / 3);
+                    const col = val % 3;
+                    el.style.backgroundPosition = `-${col * 88}px -${row * 88}px`;
+                    el.onclick = () => swapPuzzleTile(idx);
+                }
+                puzzleBoard.appendChild(el);
+            });
+        }
+
+        function getValidPuzzleMoves(emptyIdx) {
+            const moves = [];
+            const row = Math.floor(emptyIdx / 3);
+            const col = emptyIdx % 3;
+
+            if (row > 0) moves.push(emptyIdx - 3);
+            if (row < 2) moves.push(emptyIdx + 3);
+            if (col > 0) moves.push(emptyIdx - 1);
+            if (col < 2) moves.push(emptyIdx + 1);
+
+            return moves;
+        }
+
+        function swapPuzzleTile(idx) {
+            const emptyIdx = puzzleTiles.indexOf(8);
+            const row = Math.floor(idx / 3);
+            const col = idx % 3;
+            const emptyRow = Math.floor(emptyIdx / 3);
+            const emptyCol = emptyIdx % 3;
+
+            const isAdjacent = Math.abs(row - emptyRow) + Math.abs(col - emptyCol) === 1;
+
+            if (isAdjacent) {
+                [puzzleTiles[idx], puzzleTiles[emptyIdx]] = [puzzleTiles[emptyIdx], puzzleTiles[idx]];
+                renderPuzzleBoard();
+                checkPuzzleWin();
+            }
+        }
+
+        function checkPuzzleWin() {
+            const isSolved = puzzleTiles.every((val, idx) => val === idx);
+            if (isSolved) {
+                setTimeout(() => {
+                    alert('Hore! Puzzle berhasil disusun! 🥳');
+                    const lockScr = document.getElementById('screen-lock');
+                    const coverScr = document.getElementById('screen-cover');
+                    if (lockScr) lockScr.classList.remove('active');
+                    if (coverScr) coverScr.classList.add('active');
+                }, 200);
+            }
+        }
+
+        function shufflePuzzle() {
+            for (let i = 0; i < 60; i++) {
+                const emptyIdx = puzzleTiles.indexOf(8);
+                const validMoves = getValidPuzzleMoves(emptyIdx);
+                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                [puzzleTiles[emptyIdx], puzzleTiles[randomMove]] = [puzzleTiles[randomMove], puzzleTiles[emptyIdx]];
+            }
+            renderPuzzleBoard();
+        }
+
+        // Otomatis refresh puzzle saat tombol dipencet
+        const originalTryOpenPin = window.tryOpenPinScreen;
+        window.tryOpenPinScreen = function() {
+            if (typeof originalTryOpenPin === 'function') originalTryOpenPin();
+            shufflePuzzle();
+        };
+
+        shufflePuzzle();
+    </script>
 </body>
 </html>

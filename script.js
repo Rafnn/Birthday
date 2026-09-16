@@ -5,7 +5,6 @@
 // Terkunci otomatis sampai 21 September jam 00:00:00
 const TARGET_DATE = new Date(new Date().getFullYear(), 8, 21, 0, 0, 0);
 
-const CORRECT_PIN = "2109"; // PIN Passcode (21 Sept)
 const myPhoneNumber = "62895338170753";
 
 const letterText = "Hallow Cintahh,\n\nMaacii yeahh udah hadir di hidupku dan bertahan sejauh ini. maacii jugaa udahh sabar sama aku seluas samudera, Kamu selalu jadi seseorang yang selalu bikin aku merasa dicintai.\n\nSelamat bertambah usia ya, sayang. Semoga doa doa kamu dikabulkan!";
@@ -28,7 +27,9 @@ let wasMusicPlayingBeforeVideo = false;
 let candleBlown = false;
 
 
+// =========================================================
 // 0. LOGIKA HITUNG MUNDUR & UNLOCK TANGGAL
+// =========================================================
 function updateCountdown() {
     const now = new Date();
     const diff = TARGET_DATE - now;
@@ -56,7 +57,7 @@ function updateCountdown() {
         if (sElem) sElem.innerText = 0;
         if (msgElem) {
             msgElem.style.color = "#2e7d32";
-            msgElem.innerText = "Waktunya Tiba! Klik tombol untuk masuk ✨";
+            msgElem.innerText = "Masii di kuncii sabarr yyah cintaku";
         }
     }
 }
@@ -71,38 +72,108 @@ function tryOpenPinScreen() {
     } else {
         document.getElementById('screen-date-lock').classList.remove('active');
         document.getElementById('screen-lock').classList.add('active');
+        shufflePuzzle(); // Mengacak puzzle saat layar puzzle terbuka
     }
 }
 
 
-// 1. PIN PASSCODE LOCK
-let currentPin = "";
+// =========================================================
+// 1. LOGIKA SLIDING PUZZLE (LOCK SCREEN)
+// =========================================================
+let puzzleTiles = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-function pressKey(num) {
-    if (currentPin.length < 4) {
-        currentPin += num;
-        document.getElementById("pin-input").value = currentPin;
+function renderPuzzleBoard() {
+    const board = document.getElementById('puzzle-board');
+    if (!board) return;
+    board.innerHTML = '';
+    
+    puzzleTiles.forEach((val, idx) => {
+        const el = document.createElement('div');
+        if (val === 8) {
+            el.className = 'tile empty-tile';
+        } else {
+            el.className = 'tile';
+            const row = Math.floor(val / 3);
+            const col = val % 3;
+            el.style.backgroundPosition = `-${col * 88}px -${row * 88}px`;
+            
+            // Angka pembantu urutan puzzle
+            el.innerText = val + 1;
+            el.style.color = '#fff';
+            el.style.fontWeight = 'bold';
+            el.style.fontSize = '18px';
+            el.style.textShadow = '1px 1px 4px #000';
+            el.style.display = 'flex';
+            el.style.alignItems = 'flex-start';
+            el.style.padding = '4px 8px';
+
+            el.onclick = () => swapPuzzleTile(idx);
+        }
+        board.appendChild(el);
+    });
+}
+
+function getValidPuzzleMoves(emptyIdx) {
+    const moves = [];
+    const row = Math.floor(emptyIdx / 3);
+    const col = emptyIdx % 3;
+
+    if (row > 0) moves.push(emptyIdx - 3);
+    if (row < 2) moves.push(emptyIdx + 3);
+    if (col > 0) moves.push(emptyIdx - 1);
+    if (col < 2) moves.push(emptyIdx + 1);
+
+    return moves;
+}
+
+function swapPuzzleTile(idx) {
+    const emptyIdx = puzzleTiles.indexOf(8);
+    const row = Math.floor(idx / 3);
+    const col = idx % 3;
+    const emptyRow = Math.floor(emptyIdx / 3);
+    const emptyCol = emptyIdx % 3;
+
+    const isAdjacent = Math.abs(row - emptyRow) + Math.abs(col - emptyCol) === 1;
+
+    if (isAdjacent) {
+        [puzzleTiles[idx], puzzleTiles[emptyIdx]] = [puzzleTiles[emptyIdx], puzzleTiles[idx]];
+        renderPuzzleBoard();
+        checkPuzzleWin();
     }
 }
 
-function clearPin() {
-    currentPin = "";
-    document.getElementById("pin-input").value = "";
-    document.getElementById("pin-error").innerText = "";
-}
-
-function checkPin() {
-    if (currentPin === CORRECT_PIN) {
-        document.getElementById('screen-lock').classList.remove('active');
-        document.getElementById('screen-cover').classList.add('active');
-    } else {
-        document.getElementById("pin-error").innerText = "PIN salah, coba tanggal jadian!";
-        clearPin();
+function checkPuzzleWin() {
+    const isSolved = puzzleTiles.every((val, idx) => val === idx);
+    if (isSolved) {
+        setTimeout(() => {
+            alert('Hore! Puzzle berhasil disusun! 🥳');
+            forceOpen();
+        }, 200);
     }
 }
 
+function shufflePuzzle() {
+    for (let i = 0; i < 60; i++) {
+        const emptyIdx = puzzleTiles.indexOf(8);
+        const validMoves = getValidPuzzleMoves(emptyIdx);
+        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+        [puzzleTiles[emptyIdx], puzzleTiles[randomMove]] = [puzzleTiles[randomMove], puzzleTiles[emptyIdx]];
+    }
+    renderPuzzleBoard();
+}
 
+// Fungsi skip jika puzzle dirasa terlalu sulit
+function forceOpen() {
+    const lockScr = document.getElementById('screen-lock');
+    const coverScr = document.getElementById('screen-cover');
+    if (lockScr) lockScr.classList.remove('active');
+    if (coverScr) coverScr.classList.add('active');
+}
+
+
+// =========================================================
 // 2. RELATIONSHIP COUNTER REALTIME
+// =========================================================
 const startDate = new Date("2019-09-21T00:00:00");
 
 function updateCounter() {
@@ -129,7 +200,9 @@ function updateCounter() {
 setInterval(updateCounter, 1000);
 
 
+// =========================================================
 // 3. FUNGSI TIUP LILIN INTERAKTIF
+// =========================================================
 function blowCandle() {
     if (candleBlown) return;
     const flame = document.getElementById('flame');
@@ -150,7 +223,9 @@ function blowCandle() {
 }
 
 
+// =========================================================
 // 4. LIGHTBOX ZOOM FOTO
+// =========================================================
 function openLightbox(src) {
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-img');
@@ -168,7 +243,9 @@ function closeModal() {
 }
 
 
+// =========================================================
 // 5. ANIMASI HATI MELAYANG
+// =========================================================
 function createFallingHeart() {
     const container = document.getElementById('hearts-container');
     if (!container) return;
@@ -191,7 +268,9 @@ function createFallingHeart() {
 setInterval(createFallingHeart, 450);
 
 
+// =========================================================
 // 6. TOGGLE MUSIK MANUAL
+// =========================================================
 function toggleMusic() {
     const music = document.getElementById('music');
     const btn = document.getElementById('music-toggle-btn');
@@ -208,7 +287,9 @@ function toggleMusic() {
 }
 
 
+// =========================================================
 // 7. BUKA DASHBOARD
+// =========================================================
 function openDashboard() {
     const music = document.getElementById('music');
     const btn = document.getElementById('music-toggle-btn');
@@ -233,7 +314,9 @@ function openDashboard() {
 }
 
 
+// =========================================================
 // 8. PINDAH HALAMAN DETAIL
+// =========================================================
 function showPage(pageId) {
     document.getElementById('screen-dashboard').classList.remove('active');
     document.getElementById('page-' + pageId).classList.add('active');
@@ -262,7 +345,9 @@ function showPage(pageId) {
 }
 
 
+// =========================================================
 // 9. TYPEWRITER EFFECT
+// =========================================================
 function startTypewriter() {
     const target = document.getElementById('typewriter-text');
     if (!target) return;
@@ -282,7 +367,9 @@ function startTypewriter() {
 }
 
 
+// =========================================================
 // 10. BALASAN WHATSAPP
+// =========================================================
 function sendToWA() {
     const userText = document.getElementById("wa-message").value;
 
@@ -296,7 +383,9 @@ function sendToWA() {
 }
 
 
+// =========================================================
 // 11. SLIDER VIDEO
+// =========================================================
 function updateVideoSlide() {
     const videoPlayer = document.getElementById('video-player');
     const videoCaption = document.getElementById('video-caption');
@@ -329,7 +418,9 @@ function prevVideoSlide() {
 }
 
 
+// =========================================================
 // 12. KEMBALI KE DASHBOARD
+// =========================================================
 function backToDashboard() {
     const pages = document.querySelectorAll('.page-detail');
     pages.forEach(page => page.classList.remove('active'));
@@ -351,7 +442,9 @@ function backToDashboard() {
 }
 
 
+// =========================================================
 // 13. PESAN RAHASIA ANNIVERSARY
+// =========================================================
 const anniversaryMsgText = "Selamat anniversary ya, sayang. Nggak kerasa perjalanan yang kita mulai dari 21 September 2019 udah melangkah sejauh ini. Terima kasih udah selalu jadi tempat pulang paling nyaman, tempat aku bisa jadi diri sendiri tanpa rasa takut. Terima kasih buat semua sabar, tawa, dan perjuangan yang udah kita lewati bareng. Semoga langkah kita ke depannya makin terarah, makin kuat, dan selalu dipenuhi kebahagiaan. I love you, always.";
 
 function showAnniversaryMessage() {
@@ -379,3 +472,8 @@ function showAnniversaryMessage() {
         });
     }
 }
+
+// Inisialisasi awal puzzle saat file dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    shufflePuzzle();
+});
